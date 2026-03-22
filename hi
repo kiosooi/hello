@@ -8,7 +8,7 @@
 --  you teleport to a new game or server.
 --  Requires queue_on_teleport support.
 -- ══════════════════════════════════════════
-local _SCRIPT_URL = "YOUR_SCRIPT_URL_HERE"
+local _SCRIPT_URL = "https://raw.githubusercontent.com/kiosooi/hello/refs/heads/main/hi"
 -- ^ Replace with a raw pastebin/github URL to your script if you
 --   want true auto-reload. Otherwise the keepiy cmd does this too.
 
