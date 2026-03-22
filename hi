@@ -4,55 +4,42 @@
 
 -- ══════════════════════════════════════════
 --  AUTO RELOAD ON TELEPORT
---  Queues this script to re-run every time
---  you teleport to a new game or server.
---  Requires queue_on_teleport support.
+--  Paste your raw script URL below.
+--  Works with Synapse, KRNL, Fluxus, etc.
 -- ══════════════════════════════════════════
 local _SCRIPT_URL = "https://raw.githubusercontent.com/kiosooi/hello/refs/heads/main/hi"
--- ^ Replace with a raw pastebin/github URL to your script if you
---   want true auto-reload. Otherwise the keepiy cmd does this too.
+-- ^ Replace with your raw Pastebin/GitHub URL
 
 local function _tryQueueOnTeleport()
-    -- Try every known executor API for queue_on_teleport
-    local qot = nil
-    pcall(function() qot = queue_on_teleport end)
-    if not qot then pcall(function() qot = syn.queue_on_teleport end) end
-    if not qot then pcall(function() qot = getfenv(0).queue_on_teleport end) end
-    if qot then
-        local src
-        if _SCRIPT_URL ~= "YOUR_SCRIPT_URL_HERE" then
-            -- Load from URL
-            src = 'loadstring(game:HttpGet("' .. _SCRIPT_URL .. '"))()'
-        else
-            -- Fallback: re-run via HttpGet from the same IY source
-            -- (replace _SCRIPT_URL above with your own raw script link)
-            src = '-- CmdBar reloading via keepiy
-loadstring(game:HttpGet("' .. _SCRIPT_URL .. '"))()'
-        end
-        pcall(qot, src)
-        return true
-    end
-    return false
+    if _SCRIPT_URL == "YOUR_SCRIPT_URL_HERE" then return false end
+    local src = 'loadstring(game:HttpGet("' .. _SCRIPT_URL .. '"))()'
+    -- Try every known executor queue_on_teleport API
+    local ok = false
+    ok = ok or pcall(function() queue_on_teleport(src) end)
+    ok = ok or pcall(function() syn.queue_on_teleport(src) end)
+    ok = ok or pcall(function() getfenv(0).queue_on_teleport(src) end)
+    return ok
 end
 
--- Hook TeleportService so we queue right before any teleport fires
+-- Queue on load (executor may be ready immediately)
+task.defer(_tryQueueOnTeleport)
+
+-- Also re-queue right before each teleport fires
 pcall(function()
     local hmm = hookmetamethod
     local gnm = getnamecallmethod
-    if hmm and gnm then
-        local _old; _old = hmm(game, "__namecall", newcclosure(function(self, ...)
-            local method = gnm()
-            if method == "Teleport" or method == "TeleportAsync"
-                or method == "TeleportToSpawnByName" or method == "TeleportToPlaceInstance" then
-                _tryQueueOnTeleport()
-            end
-            return _old(self, ...)
-        end))
-    end
+    if not (hmm and gnm) then return end
+    local _old
+    _old = hmm(game, "__namecall", newcclosure(function(self, ...)
+        local method = gnm()
+        if method == "Teleport" or method == "TeleportAsync"
+            or method == "TeleportToSpawnByName"
+            or method == "TeleportToPlaceInstance" then
+            _tryQueueOnTeleport()
+        end
+        return _old(self, ...)
+    end))
 end)
-
--- Also try on load in case executor is ready immediately
-task.defer(_tryQueueOnTeleport)
 
 local Players           = game:GetService("Players")
 local UserInputService  = game:GetService("UserInputService")
