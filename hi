@@ -9224,6 +9224,128 @@ COMMANDS = {
             end
         end,
     },
+    {
+        name = "sunset",
+        alias = {"dusk","eveningtime"},
+        desc = "Sets the lighting to a full sunset atmosphere with sky, atmosphere, effects.",
+        action = function(_args)
+            -- ── Core Lighting ──────────────────────────
+            Lighting.Ambient                  = Color3.fromRGB(126, 105, 97)
+            Lighting.Brightness               = 2.73
+            Lighting.ColorShift_Bottom        = Color3.fromRGB(72, 64, 61)
+            Lighting.ColorShift_Top           = Color3.fromRGB(170, 138, 127)
+            Lighting.EnvironmentDiffuseScale  = 0.955
+            Lighting.EnvironmentSpecularScale = 0.712
+            Lighting.GlobalShadows            = true
+            Lighting.OutdoorAmbient           = Color3.fromRGB(70, 70, 70)
+            Lighting.ShadowSoftness           = 0.1
+            Lighting.ClockTime                = 17
+            Lighting.GeographicLatitude       = 0
+            Lighting.ExposureCompensation     = 0
+            Lighting.FogColor                 = Color3.fromRGB(192, 192, 192)
+            Lighting.FogEnd                   = 1000000
+            Lighting.FogStart                 = 0
+
+            -- ── Helper: get or create a child ──────────
+            local function getOrCreate(parent, className, name)
+                local existing = parent:FindFirstChild(name)
+                    or parent:FindFirstChildOfClass(className)
+                if existing and existing.ClassName == className then
+                    return existing
+                end
+                -- remove wrong-class child with same name
+                if existing then existing:Destroy() end
+                local obj = Instance.new(className)
+                obj.Name   = name
+                obj.Parent = parent
+                return obj
+            end
+
+            -- ── Sky ────────────────────────────────────
+            local sky = getOrCreate(Lighting, "Sky", "Sky")
+            sky.CelestialBodiesShown = true
+            sky.MoonAngularSize      = 11
+            sky.MoonTextureId        = "rbxasset://sky/moon.jpg"
+            sky.SkyboxBk             = "http://www.roblox.com/asset/?version=1&id=1013852"
+            sky.SkyboxDn             = "http://www.roblox.com/asset/?version=1&id=1013853"
+            sky.SkyboxFt             = "http://www.roblox.com/asset/?version=1&id=1013850"
+            sky.SkyboxLf             = "http://www.roblox.com/asset/?version=1&id=1013851"
+            sky.SkyboxRt             = "http://www.roblox.com/asset/?version=1&id=1013849"
+            sky.SkyboxUp             = "http://www.roblox.com/asset/?version=1&id=1013854"
+            sky.StarCount            = 3000
+            sky.SunAngularSize       = 21
+            sky.SunTextureId         = "rbxasset://sky/sun.jpg"
+
+            -- ── Atmosphere ─────────────────────────────
+            local atmo = getOrCreate(Lighting, "Atmosphere", "Atmosphere")
+            atmo.Density = 0.3
+            atmo.Offset  = 0
+            atmo.Color   = Color3.fromRGB(0, 3, 17)
+            atmo.Decay   = Color3.fromRGB(138, 141, 145)
+            atmo.Glare   = 0
+            atmo.Haze    = 0
+
+            -- ── SunRays ────────────────────────────────
+            local rays = getOrCreate(Lighting, "SunRaysEffect", "SunRays")
+            rays.Enabled   = true
+            rays.Intensity = 0.105
+            rays.Spread    = 1
+
+            -- ── BASE_Correction (ColorCorrection) ──────
+            local cc = getOrCreate(Lighting, "ColorCorrectionEffect", "BASE_Correction")
+            cc.Brightness  = 0
+            cc.Contrast    = 0
+            cc.Enabled     = true
+            cc.Saturation  = 0.1
+            cc.TintColor   = Color3.fromRGB(255, 255, 255)
+
+            -- ── BASE_HitColor (ColorCorrection) ────────
+            local hc = Lighting:FindFirstChild("BASE_HitColor")
+            if not hc or hc.ClassName ~= "ColorCorrectionEffect" then
+                if hc then hc:Destroy() end
+                hc = Instance.new("ColorCorrectionEffect")
+                hc.Name   = "BASE_HitColor"
+                hc.Parent = Lighting
+            end
+            hc.Brightness  = 0
+            hc.Contrast    = 0
+            hc.Enabled     = true
+            hc.Saturation  = 0
+            hc.TintColor   = Color3.fromRGB(255, 255, 255)
+
+            -- ── BASE_Depth (DepthOfField) ───────────────
+            local dof = getOrCreate(Lighting, "DepthOfFieldEffect", "BASE_Depth")
+            dof.Enabled        = true
+            dof.FarIntensity   = 0
+            dof.FocusDistance  = 25
+            dof.InFocusRadius  = 0
+            dof.NearIntensity  = 0
+
+            -- ── BASE_Grading (ColorGradingEffect) ──────
+            -- Makes shadows look nicer, no settable properties
+            local grading = Lighting:FindFirstChild("BASE_Grading")
+            if not grading then
+                -- Try ColorGradingEffect first, fall back to a neutral ColorCorrection
+                local ok = pcall(function()
+                    grading = Instance.new("ColorGradingEffect")
+                    grading.Name   = "BASE_Grading"
+                    grading.Parent = Lighting
+                end)
+                if not ok or not grading then
+                    grading = Instance.new("ColorCorrectionEffect")
+                    grading.Name      = "BASE_Grading"
+                    grading.Enabled   = true
+                    grading.Contrast  = 0
+                    grading.Saturation= 0
+                    grading.Brightness= 0
+                    grading.TintColor = Color3.new(1,1,1)
+                    grading.Parent    = Lighting
+                end
+            end
+
+            print("[Sunset] Lighting applied!")
+        end,
+    },
     -- ← Add more commands above this line
 }
 -- ══════════════════════════════════════════
