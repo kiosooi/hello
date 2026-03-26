@@ -1,4 +1,4 @@
--- CmdBar LocalScript
+-- CmdBar LocalScript sunset
 -- Place inside: StarterPlayerScripts
 -- Toggle: ' (apostrophe)  |  Prefix: ;
 
@@ -9229,7 +9229,12 @@ COMMANDS = {
         alias = {"dusk","eveningtime"},
         desc = "Sets the lighting to a full sunset atmosphere with sky, atmosphere, effects.",
         action = function(_args)
-            -- ── Core Lighting ──────────────────────────
+            -- Clear existing effects
+        	for _, v in pairs(Lighting:GetChildren()) do
+        	    v:Destroy()
+        	end
+			
+			-- ── Core Lighting ──────────────────────────
             Lighting.Ambient                  = Color3.fromRGB(126, 105, 97)
             Lighting.Brightness               = 2.73
             Lighting.ColorShift_Bottom        = Color3.fromRGB(72, 64, 61)
@@ -9346,7 +9351,119 @@ COMMANDS = {
             print("[Sunset] Lighting applied!")
         end,
     },
-    -- ← Add more commands above this line
+	{
+    name = "Aurora",
+    alias = {"aurab","ab","aura"},
+    desc = "Applies Aurora Borealis lighting preset.",
+    action = function(_args)
+        	local Lighting = game:GetService("Lighting")
+
+        	-- Clear existing effects
+        	for _, v in pairs(Lighting:GetChildren()) do
+        	    v:Destroy()
+        	end
+
+        	-- LIGHTING SETTINGS
+        	Lighting.Ambient = Color3.fromRGB(126, 105, 97)
+        	Lighting.Brightness = 2.73
+        	Lighting.ColorShift_Bottom = Color3.fromRGB(72, 64, 61)
+        	Lighting.ColorShift_Top = Color3.fromRGB(170, 138, 127)
+        	Lighting.EnvironmentDiffuseScale = 0.955
+        	Lighting.EnvironmentSpecularScale = 0.712
+     		Lighting.GlobalShadows = true
+        	Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+        	Lighting.ShadowSoftness = 0.1
+        	Lighting.Technology = Enum.Technology.ShadowMap
+
+        	Lighting.ClockTime = 12
+        	Lighting.GeographicLatitude = 0
+        	Lighting.ExposureCompensation = 0
+
+        	Lighting.FogColor = Color3.fromRGB(0, 255, 255)
+        	Lighting.FogEnd = 100000000
+        	Lighting.FogStart = 0
+
+        	Lighting:SetAttribute("RBX_LightingTech", true)
+
+        	-- SKY
+        	local sky = Instance.new("Sky")
+        	sky.Name = "Aurora Borealis"
+        	sky.Parent = Lighting
+
+        	sky.CelestialBodiesShown = false
+        	sky.MoonAngularSize = 11
+        	sky.MoonTextureId = "rbxasset://sky/moon.jpg"
+
+        	sky.SkyboxBk = "http://www.roblox.com/asset/?id=340908398"
+        	sky.SkyboxDn = "http://www.roblox.com/asset/?id=340908450"
+        	sky.SkyboxFt = "http://www.roblox.com/asset/?id=340908468"
+        	sky.SkyboxLf = "http://www.roblox.com/asset/?id=340908504"
+        	sky.SkyboxRt = "http://www.roblox.com/asset/?id=340908530"
+        	sky.SkyboxUp = "http://www.roblox.com/asset/?id=340908586"
+
+        	sky.StarCount = 5000
+        	sky.SunAngularSize = 21
+        	sky.SunTextureId = "rbxasset://sky/sun.jpg"
+
+        	-- SUN RAYS
+        	local sunRays = Instance.new("SunRaysEffect")
+        	sunRays.Enabled = true
+        	sunRays.Intensity = 0.105
+        	sunRays.Spread = 1
+        	sunRays.Parent = Lighting
+		
+        	-- ATMOSPHERE
+        	local atmosphere = Instance.new("Atmosphere")
+        	atmosphere.Name = "Atmosphere"
+        	atmosphere.Parent = Lighting
+
+        	atmosphere.Density = 0.3
+        	atmosphere.Offset = 0
+        	atmosphere.Color = Color3.fromRGB(0, 3, 17)
+        	atmosphere.Decay = Color3.fromRGB(138, 141, 145)
+        	atmosphere.Glare = 0
+        	atmosphere.Haze = 0
+
+        	-- COLOR CORRECTION 1
+        	local cc1 = Instance.new("ColorCorrectionEffect")
+        	cc1.Name = "BASE_HitColor"
+        	cc1.Parent = Lighting
+
+        	cc1.Brightness = 0
+        	cc1.Contrast = 0
+        	cc1.Saturation = 0
+        	cc1.TintColor = Color3.fromRGB(255, 255, 255)
+        	cc1.Enabled = true
+
+        	-- COLOR CORRECTION 2
+        	local cc2 = Instance.new("ColorCorrectionEffect")
+        	cc2.Name = "ColorCorrection"
+        	cc2.Parent = Lighting
+
+        	cc2.Brightness = 0.05
+        	cc2.Contrast = 0
+        	cc2.Saturation = 0.1
+        	cc2.TintColor = Color3.fromRGB(0, 255, 255)
+        	cc2.Enabled = true
+
+        	-- DEPTH OF FIELD
+        	local dof = Instance.new("DepthOfFieldEffect")
+        	dof.Name = "BASE_Depth"
+        	dof.Parent = Lighting
+
+        	dof.Enabled = true
+        	dof.FarIntensity = 0
+        	dof.FocusDistance = 25
+        	dof.InFocusRadius = 0
+        	dof.NearIntensity = 0
+
+        	-- BASE GRADING
+        	local baseGrading = Instance.new("ColorCorrectionEffect")
+        	baseGrading.Name = "BASE_Grading"
+        	baseGrading.Parent = Lighting
+    	end,
+	},
+	-- ← Add more commands above this line
 }
 -- ══════════════════════════════════════════
 --  OPEN / CLOSE BAR
