@@ -6805,7 +6805,7 @@ COMMANDS = {
             pcall(function() TeleportService:TeleportCancel() end)
         end,
     },
-    -- ══ MORE IY CMDS: SURVIVAL / PLAYER ══
+    -- ══ MORE IY CMDS: SURVIVAL / PLAYER ══ ESP
     -- ══ MORE IY CMDS: CAMERA ══
     -- ══ MORE IY CMDS: COMBAT ══
     -- ══ MORE IY CMDS: WORLD EXTRAS ══
@@ -9463,6 +9463,108 @@ COMMANDS = {
         	baseGrading.Parent = Lighting
     	end,
 	},
+	{
+        name = "awesome day",
+        alias = {"awesomeday","great day"},
+        desc = "Sets the lighting to an awesome day atmosphere with sky, atmosphere, effects.",
+        action = function(_args)
+            -- Clear existing effects
+            for _, v in pairs(Lighting:GetChildren()) do
+                v:Destroy()
+            end
+
+            -- ── Core Lighting ──────────────────────────
+            Lighting.Ambient                  = Color3.fromRGB(50, 50, 50)
+            Lighting.Brightness               = 3
+            Lighting.ColorShift_Bottom        = Color3.fromRGB(0, 0, 0)
+            Lighting.ColorShift_Top           = Color3.fromRGB(0, 0, 0)
+            Lighting.EnvironmentDiffuseScale  = 0.2
+            Lighting.EnvironmentSpecularScale = 0.2
+            Lighting.GlobalShadows            = true
+            Lighting.OutdoorAmbient           = Color3.fromRGB(70, 70, 70)
+            Lighting.ShadowSoftness           = 0.2
+            Lighting.ClockTime                = 17
+            Lighting.GeographicLatitude       = 45
+            Lighting.ExposureCompensation     = 0.5
+            Lighting.FogColor                 = Color3.fromRGB(192, 192, 192)
+            Lighting.FogEnd                   = 100000
+            Lighting.FogStart                 = 0
+
+            -- ── Helper: get or create a child ──────────
+            local function getOrCreate(parent, className, name)
+                local existing = parent:FindFirstChild(name)
+                    or parent:FindFirstChildOfClass(className)
+                if existing and existing.ClassName == className then
+                    return existing
+                end
+                if existing then existing:Destroy() end
+                local obj = Instance.new(className)
+                obj.Name   = name
+                obj.Parent = parent
+                return obj
+            end
+
+            -- ── Sky ────────────────────────────────────
+            local sky = getOrCreate(Lighting, "Sky", "Sky")
+            sky.CelestialBodiesShown = true
+            sky.MoonAngularSize      = 11
+            sky.MoonTextureId        = "rbxasset://sky/moon.jpg"
+            sky.SkyboxBk             = "rbxassetid://5910588..."
+            sky.SkyboxDn             = "rbxassetid://5910598..."
+            sky.SkyboxFt             = "rbxassetid://591058104"
+            sky.SkyboxLf             = "rbxassetid://591057861"
+            sky.SkyboxRt             = "rbxassetid://591057625"
+            sky.SkyboxUp             = "rbxassetid://59105996..."
+            sky.StarCount            = 3000
+            sky.SunAngularSize       = 17
+            sky.SunTextureId         = "rbxasset://sky/sun.jpg"
+
+            -- ── Atmosphere ─────────────────────────────
+            local atmo = getOrCreate(Lighting, "Atmosphere", "Atmosphere")
+            atmo.Density = 0.364
+            atmo.Offset  = 0.556
+            atmo.Color   = Color3.fromRGB(199, 175, 166)
+            atmo.Decay   = Color3.fromRGB(44, 39, 33)
+            atmo.Glare   = 0.36
+            atmo.Haze    = 0
+
+            -- ── SunRays ────────────────────────────────
+            local rays = getOrCreate(Lighting, "SunRaysEffect", "SunRays")
+            rays.Enabled   = true
+            rays.Intensity = 0.075
+            rays.Spread    = 0.727
+
+            -- ── ColorCorrection ────────────────────────
+            local cc = getOrCreate(Lighting, "ColorCorrectionEffect", "ColorCorrection")
+            cc.Brightness  = 0.1
+            cc.Contrast    = 0.3
+            cc.Enabled     = true
+            cc.Saturation  = -0.3
+            cc.TintColor   = Color3.fromRGB(246, 255, 254)
+
+            -- ── Bloom ──────────────────────────────────
+            local bloom = getOrCreate(Lighting, "BloomEffect", "Bloom")
+            bloom.Enabled   = true
+            bloom.Intensity = 0.3
+            bloom.Size      = 10
+            bloom.Threshold = 0.8
+
+            -- ── Blur ───────────────────────────────────
+            local blur = getOrCreate(Lighting, "BlurEffect", "Blur")
+            blur.Enabled = false
+            blur.Size    = 0
+
+            -- ── DepthOfField ───────────────────────────
+            local dof = getOrCreate(Lighting, "DepthOfFieldEffect", "DepthOfField")
+            dof.Enabled        = true
+            dof.FarIntensity   = 0.506
+            dof.FocusDistance  = 5.127
+            dof.InFocusRadius  = 0
+            dof.NearIntensity  = 0
+
+            print("[Awesome Day] Lighting applied!")
+        end,
+    },
 	-- ← Add more commands above this line
 }
 -- ══════════════════════════════════════════
