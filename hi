@@ -8286,28 +8286,6 @@ COMMANDS = {
         end,
     },
     {
-        name = "instantproximityprompts",
-        alias = {"instantpp","fastprompts"},
-        desc = "Makes all proximity prompts fire instantly when you hold them.",
-        action = function(_args)
-            local PPS = game:GetService("ProximityPromptService")
-            local fpp = getfenv and getfenv(0).fireproximityprompt
-            if not fpp then print("[InstantPP] needs fireproximityprompt"); return end
-            if _G.instantPPConn then _G.instantPPConn:Disconnect() end
-            _G.instantPPConn = PPS.PromptButtonHoldBegan:Connect(function(prompt)
-                pcall(function() fpp(prompt) end)
-            end)
-        end,
-    },
-    {
-        name = "uninstantproximityprompts",
-        alias = {"uninstantpp","normalPrompts"},
-        desc = "Disables instant proximity prompts.",
-        action = function(_args)
-            if _G.instantPPConn then _G.instantPPConn:Disconnect(); _G.instantPPConn = nil end
-        end,
-    },
-    {
         name = "animsunanchored",
         alias = {"freezeua2","freezeparts"},
         desc = "Freezes unanchored workspace parts using BodyPosition (alias of freezeunanchored).",
@@ -9565,7 +9543,22 @@ COMMANDS = {
             print("[Awesome Day] Lighting applied!")
         end,
     },
-	-- ← Add more commands above this line
+
+	{
+    name = "instantinteract",
+    alias = {"instainteract", "antiproximityprompts", "instaint"},
+    desc = "Sets all ProximityPrompt HoldDurations to 0 and keeps them at 0 for any new ones.",
+    action = function(_args)
+        for _, p in pairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") then p.HoldDuration = 0 end
+        end
+        if _G.proximityConn then _G.proximityConn:Disconnect() end
+        _G.proximityConn = workspace.DescendantAdded:Connect(function(d)
+            if d:IsA("ProximityPrompt") then d.HoldDuration = 0 end
+        end)
+    end,
+	},
+	-- ← Add more commands above this line instant
 }
 -- ══════════════════════════════════════════
 --  OPEN / CLOSE BAR
